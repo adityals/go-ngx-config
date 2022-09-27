@@ -160,6 +160,6 @@ go-ngx-config parse -f <NGINX_CONF_FILE>
 <br/>
 
 ## TODO(s):
-- [] Include directive and reads the glob (?)
-- [] HTTP Server for see the config on UI browser
-- [] And lot more...
+- [ ] Include directive and reads the glob (?)
+- [ ] HTTP Server for see the config on UI browser
+- [ ] And lot more...
