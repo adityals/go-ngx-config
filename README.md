@@ -7,7 +7,11 @@ A nginx config parser
 ## Basic Usage
 Usage:
 ```sh
-go-ngx-config parse -f <NGINX_CONF_FILE>
+# -f          file path location nginx configm, e,g: ./examples/basic/nginx.conf
+# -o          output json file path location, e.g: ./examples/basic/output
+
+
+go-ngx-config parse -f <NGINX_CONF_FILE> -o <OUTPUT_JSON_FILE_DUMP>
 ```
 
 <details>
@@ -98,21 +102,14 @@ go-ngx-config parse -f <NGINX_CONF_FILE>
                 ]
               },
               {
-                "Block": {
-                  "Directives": [
-                    {
-                      "Block": null,
-                      "Name": "root",
-                      "Parameters": [
-                        "html"
-                      ]
-                    }
-                  ]
-                },
                 "Name": "location",
-                "Parameters": [
-                  "/"
-                ]
+                "Modifier": "=",
+                "Match": "/favicon.ico"
+              },
+              {
+                "Name": "location",
+                "Modifier": "",
+                "Match": "/"
               }
             ]
           }
@@ -152,7 +149,7 @@ go-ngx-config parse -f <NGINX_CONF_FILE>
       ]
     }
   ],
-  "Filepath": "examples/basic/nginx.conf"
+  "Filepath": "./examples/basic/nginx.conf"
 }
 ```
 </details>

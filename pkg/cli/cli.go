@@ -7,8 +7,8 @@ import (
 	"github.com/adityalstkp/go-ngx-config/internal/parser"
 )
 
-func NewNgxConfParser(file string) (*ast.Config, error) {
-	parser, err := parser.NewParser(file)
+func NewNgxConfParser(cliOpts NgxConfParserCliOptions) (*ast.Config, error) {
+	parser, err := parser.NewParser(cliOpts.Filepath)
 	if err != nil {
 		return nil, err
 	}

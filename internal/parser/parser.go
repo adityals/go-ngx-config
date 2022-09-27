@@ -51,6 +51,9 @@ func newParserFromLexer(lexer *lexer.Lexer) *Parser {
 		"server": func(d *directive.Directive) statement.IDirective {
 			return parser.wrapServer(d)
 		},
+		"location": func(d *directive.Directive) statement.IDirective {
+			return parser.wrapLocation(d)
+		},
 	}
 
 	return parser
@@ -132,4 +135,9 @@ func (p *Parser) wrapHttp(directive *directive.Directive) *ast.Http {
 func (p *Parser) wrapServer(directive *directive.Directive) *ast.Server {
 	s, _ := ast.NewServer(directive)
 	return s
+}
+
+func (p *Parser) wrapLocation(directive *directive.Directive) *ast.Location {
+	l, _ := ast.NewLocation(directive)
+	return l
 }

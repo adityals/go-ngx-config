@@ -23,6 +23,7 @@ func NewParseCommand() *cobra.Command {
 	}
 
 	parseCmd.Flags().StringP("file", "f", "", "nginx.conf file location")
+	parseCmd.Flags().StringP("output", "o", "", "output file location")
 
 	return parseCmd
 }
