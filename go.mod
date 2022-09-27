@@ -1,4 +1,4 @@
-module github.com/adityalstkp/go-ngx-config
+module github.com/adityals/go-ngx-config
 
 go 1.14
 

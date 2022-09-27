@@ -4,11 +4,11 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/adityalstkp/go-ngx-config/internal/ast"
-	"github.com/adityalstkp/go-ngx-config/internal/directive"
-	"github.com/adityalstkp/go-ngx-config/internal/lexer"
-	"github.com/adityalstkp/go-ngx-config/internal/statement"
-	"github.com/adityalstkp/go-ngx-config/internal/token"
+	"github.com/adityals/go-ngx-config/internal/ast"
+	"github.com/adityals/go-ngx-config/internal/directive"
+	"github.com/adityals/go-ngx-config/internal/lexer"
+	"github.com/adityals/go-ngx-config/internal/statement"
+	"github.com/adityals/go-ngx-config/internal/token"
 )
 
 type Parser struct {

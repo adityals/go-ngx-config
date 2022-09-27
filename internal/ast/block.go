@@ -1,7 +1,7 @@
 package ast
 
 import (
-	"github.com/adityalstkp/go-ngx-config/internal/statement"
+	"github.com/adityals/go-ngx-config/internal/statement"
 )
 
 type Block struct {

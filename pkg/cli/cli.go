@@ -3,8 +3,8 @@ package cli
 import (
 	"errors"
 
-	"github.com/adityalstkp/go-ngx-config/internal/ast"
-	"github.com/adityalstkp/go-ngx-config/internal/parser"
+	"github.com/adityals/go-ngx-config/internal/ast"
+	"github.com/adityals/go-ngx-config/internal/parser"
 )
 
 func NewNgxConfParser(cliOpts NgxConfParserCliOptions) (*ast.Config, error) {

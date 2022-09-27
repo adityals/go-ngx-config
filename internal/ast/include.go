@@ -1,8 +1,8 @@
 package ast
 
 import (
-	"github.com/adityalstkp/go-ngx-config/internal/directive"
-	"github.com/adityalstkp/go-ngx-config/internal/statement"
+	"github.com/adityals/go-ngx-config/internal/directive"
+	"github.com/adityals/go-ngx-config/internal/statement"
 )
 
 type Include struct {

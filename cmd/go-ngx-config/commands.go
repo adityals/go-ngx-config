@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/adityalstkp/go-ngx-config/pkg/cli"
+	"github.com/adityals/go-ngx-config/pkg/cli"
 	"github.com/spf13/cobra"
 )
 

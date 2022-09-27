@@ -1,6 +1,6 @@
 package directive
 
-import "github.com/adityalstkp/go-ngx-config/internal/statement"
+import "github.com/adityals/go-ngx-config/internal/statement"
 
 type Directive struct {
 	Block      statement.IBlock

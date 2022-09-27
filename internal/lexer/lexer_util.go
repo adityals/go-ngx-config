@@ -1,6 +1,6 @@
 package lexer
 
-import "github.com/adityalstkp/go-ngx-config/internal/token"
+import "github.com/adityals/go-ngx-config/internal/token"
 
 func isEOF(ch rune) bool {
 	return ch == rune(token.EOF)

@@ -3,7 +3,7 @@ package ast
 import (
 	"errors"
 
-	"github.com/adityalstkp/go-ngx-config/internal/statement"
+	"github.com/adityals/go-ngx-config/internal/statement"
 )
 
 type Server struct {

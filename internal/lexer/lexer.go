@@ -5,7 +5,7 @@ import (
 	"bytes"
 	"io"
 
-	"github.com/adityalstkp/go-ngx-config/internal/token"
+	"github.com/adityals/go-ngx-config/internal/token"
 )
 
 type runeCheck func(rune) bool
