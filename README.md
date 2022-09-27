@@ -1,13 +1,18 @@
+![](https://img.shields.io/badge/version-0.0.1-brightgreen)
+
 # go-ngx-config
+A nginx config parser
 
-### Basic Usage
 
+## Basic Usage
 Usage:
 ```sh
 go-ngx-config parse -f <NGINX_CONF_FILE>
 ```
 
-Result:
+<details>
+<summary>Result</summary>
+
 ```json
 {
   "Directives": [
@@ -150,3 +155,11 @@ Result:
   "Filepath": "examples/basic/nginx.conf"
 }
 ```
+</details>
+
+<br/>
+
+## TODO(s):
+- [] Include directive and reads the glob (?)
+- [] HTTP Server for see the config on UI browser
+- [] And lot more...
