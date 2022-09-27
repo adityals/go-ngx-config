@@ -1,6 +1,8 @@
 package cli
 
 import (
+	"errors"
+
 	"github.com/adityalstkp/go-ngx-config/internal/ast"
 	"github.com/adityalstkp/go-ngx-config/internal/parser"
 )
@@ -11,5 +13,10 @@ func NewNgxConfParser(file string) (*ast.Config, error) {
 		return nil, err
 	}
 
-	return parser.Parse(), nil
+	parsed := parser.Parse()
+	if parsed == nil {
+		return nil, errors.New("cannot be parsed")
+	}
+
+	return parsed, nil
 }
