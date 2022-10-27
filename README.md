@@ -104,12 +104,30 @@ go-ngx-config parse -f <NGINX_CONF_FILE> -o <OUTPUT_JSON_FILE_DUMP>
               {
                 "Name": "location",
                 "Modifier": "=",
-                "Match": "/favicon.ico"
+                "Match": "/favicon.ico",
+                "Directives": [
+                  {
+                    "Block": null,
+                    "Name": "root",
+                    "Parameters": [
+                      "html"
+                    ]
+                  }
+                ]
               },
               {
                 "Name": "location",
                 "Modifier": "",
-                "Match": "/"
+                "Match": "/",
+                "Directives": [
+                  {
+                    "Block": null,
+                    "Name": "root",
+                    "Parameters": [
+                      "html"
+                    ]
+                  }
+                ]
               }
             ]
           }
