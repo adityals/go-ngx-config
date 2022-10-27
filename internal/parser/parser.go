@@ -89,7 +89,7 @@ parsing_loop:
 	return ctx
 }
 
-// TODO: handle directive
+// TODO: handle directive wrappers
 func (p *Parser) parseStatement() statement.IDirective {
 	directive := &directive.Directive{
 		Name: p.currentToken.Literal,
