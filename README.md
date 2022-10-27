@@ -1,10 +1,11 @@
-![](https://img.shields.io/badge/version-0.0.3-brightgreen)
+![](https://img.shields.io/badge/version-0.1.0-brightgreen)
 
 # go-ngx-config
 A nginx config parser
 
 
 ## Basic Usage
+### Binary
 Usage:
 ```sh
 # -f          file path location nginx configm, e,g: ./examples/basic/nginx.conf

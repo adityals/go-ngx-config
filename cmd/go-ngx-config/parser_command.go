@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/adityals/go-ngx-config/pkg/cli"
+	"github.com/adityals/go-ngx-config/pkg/parser"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -24,11 +24,11 @@ func RunParseNgx(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	cliOpts := cli.NgxConfParserCliOptions{
+	parserOpts := parser.NgxConfParserCliOptions{
 		Filepath: filePath,
 	}
 
-	ast, err := cli.NewNgxConfParser(cliOpts)
+	ast, err := parser.NewNgxConfParser(parserOpts)
 	if err != nil {
 		return err
 	}
