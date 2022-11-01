@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>WASM Example</title>
+    <style>
+      .column {
+        float: left;
+        width: 50%;
+      }
+
+      .row:after {
+        content: "";
+        display: table;
+        clear: both;
+      }
+    </style>
+  </head>
+
+
+  <body>
+    <div class="row">
+      <div class="column">
+        <textarea id="nginx-conf"></textarea>
+      </div>
+      <div class="column">
+        <pre id="ast-result"></pre>
+      </div>
+    </div>
+
+    <button id="act-btn">Generate AST</button>
+
+
+
+    <script src="wasm_exec.js"></script>
+    <script type="module" src="index.js"></script>
+  </body>
+</html>

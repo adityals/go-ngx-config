@@ -1,4 +1,4 @@
-![](https://img.shields.io/badge/version-0.1.0-brightgreen)
+![](https://img.shields.io/badge/version-0.1.1-brightgreen)
 
 # go-ngx-config
 A nginx config parser
