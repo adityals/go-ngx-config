@@ -2,6 +2,7 @@ package matcher
 
 import (
 	"errors"
+	"net/url"
 	"regexp"
 	"strings"
 
@@ -26,6 +27,11 @@ func NewLocationMatcher(conf *ast.Config, targetPath string) (*LocationMatcher, 
 		return nil, errors.New("no config can be compute")
 	}
 
+	parsedUrl, err := url.Parse(targetPath)
+	if err != nil {
+		return nil, err
+	}
+
 	locations := make([]ast.Location, 0)
 
 	locationDirectives := conf.FindDirectives("location")
@@ -47,7 +53,7 @@ func NewLocationMatcher(conf *ast.Config, targetPath string) (*LocationMatcher, 
 			Directives: directives})
 	}
 
-	match, err := locationTester(locations, targetPath)
+	match, err := locationTester(locations, parsedUrl.Path)
 	if err != nil {
 		return nil, err
 	}

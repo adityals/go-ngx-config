@@ -47,13 +47,35 @@ const registerWasm = async () => {
 };
 
 
-const actButton = document.getElementById('act-btn')
-actButton.addEventListener('click', () => {
-  const configVal = document.getElementById('nginx-conf').value
-  const jsonAst = parseConfig(configVal)
+const actAstBtn = document.getElementById('act-ast-btn');
+const actLocationTestBtn = document.getElementById('act-test-location');
+const astResultPlaceholder = document.getElementById('result');
+const configEl = document.getElementById('nginx-conf');
+const targetUrlEl = document.getElementById('target-url');
 
-  const astResultPlaceholder = document.getElementById('ast-result')
-  astResultPlaceholder.innerHTML = jsonAst
+
+actAstBtn.addEventListener('click', async () => {
+  const configVal = configEl.value;
+  try {
+    const jsonAst = await parseConfig(configVal);
+    astResultPlaceholder.innerHTML = jsonAst;
+  } catch(err) {
+    console.error('[gen-ast] error:', err);
+    astResultPlaceholder.innerHTML = err.toString();
+  }
+})
+
+actLocationTestBtn.addEventListener('click', async () => {
+  const configVal = configEl.value;
+  const targetUrlVal = targetUrlEl.value;
+
+  try {
+    const jsonAst = await testLocation(configVal, targetUrlVal);
+    astResultPlaceholder.innerHTML = jsonAst;
+  } catch (err) {
+    console.error('[location-test] error:', err);
+    astResultPlaceholder.innerHTML = err.toString();
+  }
 })
 
 
