@@ -70,8 +70,8 @@ actLocationTestBtn.addEventListener('click', async () => {
   const targetUrlVal = targetUrlEl.value;
 
   try {
-    const jsonAst = await testLocation(configVal, targetUrlVal);
-    astResultPlaceholder.innerHTML = jsonAst;
+    const result = await testLocation(configVal, targetUrlVal);
+    astResultPlaceholder.innerHTML = result;
   } catch (err) {
     console.error('[location-test] error:', err);
     astResultPlaceholder.innerHTML = err.toString();
