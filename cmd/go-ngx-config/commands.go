@@ -27,3 +27,16 @@ func NewParseCommand() *cobra.Command {
 
 	return parseCmd
 }
+
+func NewLocationTesterCommand() *cobra.Command {
+	testCmd := &cobra.Command{
+		Use:   "lt",
+		Short: "A nginx location tester",
+		RunE:  RunNgxLocationTester,
+	}
+
+	testCmd.Flags().StringP("file", "f", "", "nginx.conf file location")
+	testCmd.Flags().StringP("url", "u", "", "target url")
+
+	return testCmd
+}

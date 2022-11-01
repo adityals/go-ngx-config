@@ -59,6 +59,10 @@ func (h *Http) FindDirectives(directiveName string) []statement.IDirective {
 		if directive.GetName() == directiveName {
 			directives = append(directives, directive)
 		}
+
+		if directive.GetBlock() != nil {
+			directives = append(directives, directive.GetBlock().FindDirectives(directiveName)...)
+		}
 	}
 
 	return directives
