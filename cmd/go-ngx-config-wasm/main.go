@@ -10,7 +10,6 @@ import (
 )
 
 // TODO: add panic handler
-
 func main() {
 	println("[go-ngx-config-wasm] installed")
 
