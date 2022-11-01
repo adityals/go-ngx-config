@@ -1,4 +1,4 @@
-![](https://img.shields.io/badge/version-0.1.0-brightgreen)
+![](https://img.shields.io/badge/version-0.2.0-brightgreen)
 
 # go-ngx-config
 A nginx config parser
@@ -175,7 +175,42 @@ go-ngx-config parse -f <NGINX_CONF_FILE> -o <OUTPUT_JSON_FILE_DUMP>
 
 <br/>
 
+
+### Web Assembly
+
+Exported Global Function
+```js
+// parseConfig: generate AST in JSON format
+// testLocation: to test location matcher
+
+// Some Basic Example
+await parseConfig(`
+server {
+  server_name my-server.domain.com
+
+  location = /my-location {
+    proxy_pass http://lite-dev;
+  }
+}
+`);
+
+await testLocation(`
+server {
+  server_name my-server.domain.com
+
+  location = /my-location {
+    proxy_pass http://lite-dev;
+  }
+}
+`, '/my-location');
+```
+![WebExample](./assets/wasm-example.png "Web Example")
+
+<br/>
+
+
 ## TODO(s):
 - [ ] Include directive and reads the glob (?)
+- [x] Location Tester
 - [ ] HTTP Server for see the config on UI browser
 - [ ] And lot more...

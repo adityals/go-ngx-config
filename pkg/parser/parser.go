@@ -13,10 +13,21 @@ func NewNgxConfParser(parserOpts NgxConfParserCliOptions) (*ast.Config, error) {
 		return nil, err
 	}
 
-	parsed := parser.Parse()
-	if parsed == nil {
+	parsedConf := parser.Parse()
+	if parsedConf == nil {
 		return nil, errors.New("cannot be parsed")
 	}
 
-	return parsed, nil
+	return parsedConf, nil
+}
+
+func NewStringNgxConfParser(confString string) (*ast.Config, error) {
+	parser := parser.NewStringParser(confString)
+
+	parsedConf := parser.Parse()
+	if parsedConf == nil {
+		return nil, errors.New("cannot be parsed")
+	}
+
+	return parsedConf, nil
 }

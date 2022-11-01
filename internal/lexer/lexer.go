@@ -18,6 +18,10 @@ type Lexer struct {
 	Latest token.Token
 }
 
+func NewStringLexer(confString string) *Lexer {
+	return NewLexer(bytes.NewBuffer([]byte(confString)))
+}
+
 func NewLexer(reader io.Reader) *Lexer {
 	return &Lexer{
 		Line:   1,

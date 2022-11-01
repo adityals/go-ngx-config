@@ -1,3 +1,12 @@
+# libs/deps
 vendor
+node_modules
+
+# binary
 bin
+*.wasm
+
+# misc
 dump.json
+wasm_exec.js
+*.log

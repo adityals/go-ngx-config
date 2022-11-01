@@ -1,0 +1,12 @@
+{
+    "name": "wasm-example",
+    "description": "Example for WASM",
+    "authors": "Aditya Septiadi",
+    "version": "0.0.1",
+    "scripts": {
+        "serve": "http-server -p 3000"
+    },
+    "dependencies": {
+        "http-server": "^14.1.1"
+    }
+}

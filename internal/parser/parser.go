@@ -20,6 +20,10 @@ type Parser struct {
 	blockWrappers    map[string]func(*directive.Directive) statement.IDirective
 }
 
+func NewStringParser(confString string) *Parser {
+	return newParserFromLexer(lexer.NewStringLexer(confString))
+}
+
 func NewParser(filePath string) (*Parser, error) {
 	f, err := os.Open(filePath)
 	if err != nil {
