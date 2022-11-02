@@ -8,7 +8,7 @@ import (
 )
 
 func NewLocationMatcher(locMatcherOpts LocationMatcherOptions) (*matcher.LocationMatcher, error) {
-	parser, err := parser.NewParser(locMatcherOpts.Filepath)
+	parser, err := parser.NewParser(parser.ParserOptions{Filepath: locMatcherOpts.Filepath, ParseInclude: locMatcherOpts.ParseInclude})
 	if err != nil {
 		return nil, err
 	}

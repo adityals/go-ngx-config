@@ -8,7 +8,7 @@ import (
 )
 
 func NewNgxConfParser(parserOpts NgxConfParserCliOptions) (*ast.Config, error) {
-	parser, err := parser.NewParser(parserOpts.Filepath)
+	parser, err := parser.NewParser(parser.ParserOptions{Filepath: parserOpts.Filepath, ParseInclude: parserOpts.ParseInclude})
 	if err != nil {
 		return nil, err
 	}
@@ -21,8 +21,8 @@ func NewNgxConfParser(parserOpts NgxConfParserCliOptions) (*ast.Config, error) {
 	return parsedConf, nil
 }
 
-func NewStringNgxConfParser(confString string) (*ast.Config, error) {
-	parser := parser.NewStringParser(confString)
+func NewStringNgxConfParser(confString string, parseInclude bool) (*ast.Config, error) {
+	parser := parser.NewStringParser(confString, parseInclude)
 
 	parsedConf := parser.Parse()
 	if parsedConf == nil {

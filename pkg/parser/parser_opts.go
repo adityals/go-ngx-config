@@ -1,5 +1,6 @@
 package parser
 
 type NgxConfParserCliOptions struct {
-	Filepath string
+	Filepath     string
+	ParseInclude bool
 }

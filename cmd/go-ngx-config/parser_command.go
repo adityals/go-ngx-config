@@ -12,9 +12,17 @@ import (
 )
 
 func RunParseNgx(cmd *cobra.Command, args []string) error {
+
 	startTime := time.Now()
 
+	logrus.Info("Parsing nginx config")
+
 	filePath, err := cmd.Flags().GetString("file")
+	if err != nil {
+		return err
+	}
+
+	parseInclude, err := cmd.Flags().GetBool("include")
 	if err != nil {
 		return err
 	}
@@ -24,8 +32,11 @@ func RunParseNgx(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
+	logrus.Info("Parsing include: ", parseInclude)
+
 	parserOpts := parser.NgxConfParserCliOptions{
-		Filepath: filePath,
+		Filepath:     filePath,
+		ParseInclude: parseInclude,
 	}
 
 	ast, err := parser.NewNgxConfParser(parserOpts)

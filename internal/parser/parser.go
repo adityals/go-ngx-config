@@ -11,37 +11,47 @@ import (
 	"github.com/adityals/go-ngx-config/internal/token"
 )
 
+type ParserOptions struct {
+	Filepath     string
+	ParseInclude bool
+}
+
 type Parser struct {
-	lexer            *lexer.Lexer
-	rootConfig       string
-	currentToken     token.Token
-	followingToken   token.Token
-	statementParsers map[string]func() statement.IDirective
-	blockWrappers    map[string]func(*directive.Directive) statement.IDirective
+	opts              ParserOptions
+	lexer             *lexer.Lexer
+	rootConfig        string
+	currentToken      token.Token
+	followingToken    token.Token
+	parsedIncludes    map[string]*ast.Config
+	statementParsers  map[string]func() statement.IDirective
+	blockWrappers     map[string]func(*directive.Directive) statement.IDirective
+	directiveWrappers map[string]func(*directive.Directive) statement.IDirective
 }
 
-func NewStringParser(confString string) *Parser {
-	return newParserFromLexer(lexer.NewStringLexer(confString))
+func NewStringParser(confString string, parseInclude bool) *Parser {
+	return newParserFromLexer(lexer.NewStringLexer(confString), ParserOptions{ParseInclude: parseInclude})
 }
 
-func NewParser(filePath string) (*Parser, error) {
-	f, err := os.Open(filePath)
+func NewParser(parserOpts ParserOptions) (*Parser, error) {
+	f, err := os.Open(parserOpts.Filepath)
 	if err != nil {
 		return nil, err
 	}
 
 	l := lexer.NewLexer(f)
-	l.File = filePath
+	l.File = parserOpts.Filepath
 
-	p := newParserFromLexer(l)
+	p := newParserFromLexer(l, parserOpts)
 	return p, nil
 }
 
-func newParserFromLexer(lexer *lexer.Lexer) *Parser {
+func newParserFromLexer(lexer *lexer.Lexer, opts ParserOptions) *Parser {
 	rootConfig, _ := filepath.Split(lexer.File)
 	parser := &Parser{
-		lexer:      lexer,
-		rootConfig: rootConfig,
+		lexer:          lexer,
+		rootConfig:     rootConfig,
+		opts:           opts,
+		parsedIncludes: make(map[string]*ast.Config),
 	}
 
 	// must double scan next token until file can be read
@@ -57,6 +67,12 @@ func newParserFromLexer(lexer *lexer.Lexer) *Parser {
 		},
 		"location": func(d *directive.Directive) statement.IDirective {
 			return parser.wrapLocation(d)
+		},
+	}
+
+	parser.directiveWrappers = map[string]func(*directive.Directive) statement.IDirective{
+		"include": func(d *directive.Directive) statement.IDirective {
+			return parser.wrapInclude(d)
 		},
 	}
 
@@ -93,7 +109,6 @@ parsing_loop:
 	return ctx
 }
 
-// TODO: handle directive wrappers
 func (p *Parser) parseStatement() statement.IDirective {
 	directive := &directive.Directive{
 		Name: p.currentToken.Literal,
@@ -105,6 +120,13 @@ func (p *Parser) parseStatement() statement.IDirective {
 
 	for p.nextToken(); p.currentToken.IsParameterEligible(); p.nextToken() {
 		directive.Parameters = append(directive.Parameters, p.currentToken.Literal)
+	}
+
+	if p.isCurrTokenEqual(token.Semicolon) {
+		if dw, ok := p.directiveWrappers[directive.Name]; ok {
+			return dw(directive)
+		}
+		return directive
 	}
 
 	for {
@@ -132,16 +154,73 @@ func (p *Parser) nextToken() {
 }
 
 func (p *Parser) wrapHttp(directive *directive.Directive) *ast.Http {
-	h, _ := ast.NewHttp(directive)
+	h, err := ast.NewHttp(directive)
+	if err != nil {
+		panic(err)
+	}
+
 	return h
 }
 
 func (p *Parser) wrapServer(directive *directive.Directive) *ast.Server {
-	s, _ := ast.NewServer(directive)
+	s, err := ast.NewServer(directive)
+	if err != nil {
+		panic(err)
+	}
+
 	return s
 }
 
 func (p *Parser) wrapLocation(directive *directive.Directive) *ast.Location {
-	l, _ := ast.NewLocation(directive)
+	l, err := ast.NewLocation(directive)
+	if err != nil {
+		panic(err)
+	}
+
 	return l
+}
+
+func (p *Parser) wrapInclude(directive *directive.Directive) *ast.Include {
+	i, err := ast.NewInclude(directive)
+	if err != nil {
+		panic(err)
+	}
+
+	if p.opts.ParseInclude {
+		includeFilePath := i.IncludePath
+
+		if !filepath.IsAbs(includeFilePath) {
+			includeFilePath = filepath.Join(p.rootConfig, i.IncludePath)
+		}
+
+		includePaths, err := filepath.Glob(includeFilePath)
+		if err != nil {
+			panic(err)
+		}
+
+		for _, includePath := range includePaths {
+			if conf, ok := p.parsedIncludes[includePath]; ok {
+				if conf == nil {
+					continue
+				}
+			} else {
+				p.parsedIncludes[includePath] = nil
+			}
+
+			parser, err := NewParser(ParserOptions{
+				Filepath:     includePath,
+				ParseInclude: p.opts.ParseInclude,
+			},
+			)
+			if err != nil {
+				panic(err)
+			}
+
+			config := parser.Parse()
+			p.parsedIncludes[includePath] = config
+			i.Configs = append(i.Configs, config)
+		}
+	}
+
+	return i
 }
