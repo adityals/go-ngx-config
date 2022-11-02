@@ -1,4 +1,4 @@
-![](https://img.shields.io/badge/version-0.2.0-brightgreen)
+![](https://img.shields.io/badge/version-0.3.0-brightgreen)
 
 # go-ngx-config
 A nginx config parser
@@ -8,11 +8,15 @@ A nginx config parser
 ### Binary
 Usage:
 ```sh
-# -f          file path location nginx configm, e,g: ./examples/basic/nginx.conf
+# Parse
+# -f          file path location nginx configm, e.g: ./examples/basic/nginx.conf
 # -o          output json file path location, e.g: ./examples/basic/output
-
-
 go-ngx-config parse -f <NGINX_CONF_FILE> -o <OUTPUT_JSON_FILE_DUMP>
+
+# Location Matcher
+# -f          file path location nginx configm, e.g: ./examples/basic/nginx.conf
+# -u          url target, e.g: /my-location
+go-ngx-config lt -f <NGINX_CONF_FILE> -u <URL_TARGET>
 ```
 
 <details>
@@ -186,7 +190,7 @@ Exported Global Function
 // Some Basic Example
 await parseConfig(`
 server {
-  server_name my-server.domain.com
+  server_name my-server.domain.com;
 
   location = /my-location {
     proxy_pass http://lite-dev;
@@ -196,7 +200,7 @@ server {
 
 await testLocation(`
 server {
-  server_name my-server.domain.com
+  server_name my-server.domain.com;
 
   location = /my-location {
     proxy_pass http://lite-dev;
@@ -204,13 +208,13 @@ server {
 }
 `, '/my-location');
 ```
-![WebExample](./assets/wasm-example.png "Web Example")
 
 <br/>
 
 
 ## TODO(s):
-- [ ] Include directive and reads the glob (?)
+- [x] .wasm binary 
 - [x] Location Tester
+- [ ] Include directive and reads the glob (?)
 - [ ] HTTP Server for see the config on UI browser
 - [ ] And lot more...

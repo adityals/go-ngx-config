@@ -42,10 +42,20 @@ func RunNgxLocationTester(cmd *cobra.Command, args []string) error {
 	}
 
 	elapsed := time.Since(startTime)
-	logrus.Info("Process time: ", elapsed)
 
 	logrus.Info("[Match] Modifier: ", match.MatchModifer)
 	logrus.Info("[Match] Path: ", match.MatchPath)
+
+	logrus.Info("[Match] --- Directives Inside --- ")
+	for _, d := range match.Directives {
+		logrus.Info("[Match] Name: ", d.GetName())
+		for _, param := range d.GetParameters() {
+			logrus.Info("[Match] Parameters: ", param)
+		}
+	}
+	logrus.Info("[Match] --- End of Directives Inside --- ")
+
+	logrus.Info("Process time: ", elapsed)
 
 	return nil
 
