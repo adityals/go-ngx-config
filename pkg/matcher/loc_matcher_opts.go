@@ -1,6 +1,7 @@
 package matcher
 
 type LocationMatcherOptions struct {
-	Filepath  string
-	UrlTarget string
+	Filepath     string
+	ParseInclude bool
+	UrlTarget    string
 }

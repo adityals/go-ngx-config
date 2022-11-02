@@ -1,4 +1,4 @@
-![](https://img.shields.io/badge/version-0.3.0-brightgreen)
+![](https://img.shields.io/badge/version-0.4.0-brightgreen)
 
 # go-ngx-config
 A nginx config parser
@@ -107,16 +107,73 @@ go-ngx-config lt -f <NGINX_CONF_FILE> -u <URL_TARGET>
                 ]
               },
               {
-                "Name": "location",
-                "Modifier": "=",
-                "Match": "/favicon.ico",
-                "Directives": [
+                "Block": null,
+                "Name": "include",
+                "Parameters": [
+                  "conf-includes/proxy.conf"
+                ],
+                "IncludePath": "conf-includes/proxy.conf",
+                "Configs": [
                   {
-                    "Block": null,
-                    "Name": "root",
-                    "Parameters": [
-                      "html"
-                    ]
+                    "Directives": [
+                      {
+                        "Block": null,
+                        "Name": "proxy_set_header",
+                        "Parameters": [
+                          "Host",
+                          "$host"
+                        ]
+                      }
+                    ],
+                    "Filepath": "examples/basic/conf-includes/proxy.conf"
+                  }
+                ]
+              },
+              {
+                "Block": null,
+                "Name": "include",
+                "Parameters": [
+                  "handlers/*.conf"
+                ],
+                "IncludePath": "handlers/*.conf",
+                "Configs": [
+                  {
+                    "Directives": [
+                      {
+                        "Name": "location",
+                        "Modifier": "=",
+                        "Match": "/my-be-service",
+                        "Directives": [
+                          {
+                            "Block": null,
+                            "Name": "proxy_pass",
+                            "Parameters": [
+                              "http://be-service"
+                            ]
+                          }
+                        ]
+                      }
+                    ],
+                    "Filepath": "examples/basic/handlers/be.conf"
+                  },
+                  {
+                    "Directives": [
+                      {
+                        "Name": "location",
+                        "Modifier": "=",
+                        "Match": "/my-fe-service",
+                        "Directives": [
+                          {
+                            "Block": null,
+                            "Name": "proxy_pass",
+                            "Parameters": [
+                              "http://fe-service"
+                            ]
+                          }
+                        ]
+                      }
+                    ],
+                    "Filepath": "examples/basic/handlers/fe.conf"
                   }
                 ]
               },
@@ -127,9 +184,17 @@ go-ngx-config lt -f <NGINX_CONF_FILE> -u <URL_TARGET>
                 "Directives": [
                   {
                     "Block": null,
-                    "Name": "root",
+                    "Name": "add_header",
                     "Parameters": [
-                      "html"
+                      "'x-foo'",
+                      "'x-bar'"
+                    ]
+                  },
+                  {
+                    "Block": null,
+                    "Name": "proxy_pass",
+                    "Parameters": [
+                      "http://my-upstream"
                     ]
                   }
                 ]
@@ -152,7 +217,9 @@ go-ngx-config lt -f <NGINX_CONF_FILE> -u <URL_TARGET>
           "Name": "include",
           "Parameters": [
             "mime.types"
-          ]
+          ],
+          "IncludePath": "mime.types",
+          "Configs": null
         },
         {
           "Block": null,
@@ -215,6 +282,6 @@ server {
 ## TODO(s):
 - [x] .wasm binary 
 - [x] Location Tester
-- [ ] Include directive and reads the glob (?)
+- [x] Include directive and reads the glob
 - [ ] HTTP Server for see the config on UI browser
 - [ ] And lot more...

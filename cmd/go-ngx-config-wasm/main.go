@@ -28,7 +28,8 @@ func registerCallbacks() {
 }
 
 func parseConfig(confString string) (*ast.Config, error) {
-	parser := parser.NewStringParser(confString)
+	// ! we mark parseInclude as false because web still getting from text input
+	parser := parser.NewStringParser(confString, false)
 
 	ast := parser.Parse()
 	if ast == nil {

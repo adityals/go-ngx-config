@@ -37,6 +37,7 @@ func NewLocationMatcher(conf *ast.Config, targetPath string) (*LocationMatcher, 
 	locations := make([]ast.Location, 0)
 
 	locationDirectives := conf.FindDirectives("location")
+
 	if len(locationDirectives) == 0 {
 		return nil, errors.New("no location(s) found")
 	}
