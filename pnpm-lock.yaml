@@ -1,10 +1,15 @@
 lockfileVersion: 5.3
 
-specifiers:
-  http-server: ^14.1.1
+importers:
 
-dependencies:
-  http-server: 14.1.1
+  .:
+    specifiers: {}
+
+  examples/wasm:
+    specifiers:
+      http-server: ^14.1.1
+    dependencies:
+      http-server: 14.1.1
 
 packages:
 

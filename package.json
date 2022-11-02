@@ -1,0 +1,7 @@
+{
+    "name": "go-ngx-config",
+    "description": "Go Nginx Configuration",
+    "authors": "Aditya Septiadi",
+    "version": "0.3.0",
+    "license": "MIT"
+}

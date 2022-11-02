@@ -7,11 +7,13 @@ import (
 	"strings"
 
 	"github.com/adityals/go-ngx-config/internal/ast"
+	"github.com/adityals/go-ngx-config/internal/statement"
 )
 
 type LocationMatcher struct {
 	MatchPath    string
 	MatchModifer string
+	Directives   []statement.IDirective
 }
 
 const (
@@ -50,7 +52,8 @@ func NewLocationMatcher(conf *ast.Config, targetPath string) (*LocationMatcher, 
 			Name:       name,
 			Modifier:   modifier,
 			Match:      match,
-			Directives: directives})
+			Directives: directives,
+		})
 	}
 
 	match, err := locationTester(locations, parsedUrl.Path)
@@ -65,7 +68,9 @@ func NewLocationMatcher(conf *ast.Config, targetPath string) (*LocationMatcher, 
 
 	return &LocationMatcher{
 		MatchModifer: match.MatchModifer,
-		MatchPath:    match.MatchPath}, nil
+		MatchPath:    match.MatchPath,
+		Directives:   match.Directives,
+	}, nil
 }
 
 func locationTester(locationsTarget []ast.Location, targetPath string) (*LocationMatcher, error) {
@@ -75,7 +80,11 @@ func locationTester(locationsTarget []ast.Location, targetPath string) (*Locatio
 		}
 
 		if location.Match == targetPath {
-			return &LocationMatcher{MatchPath: location.Match, MatchModifer: location.Modifier}, nil
+			return &LocationMatcher{
+				MatchPath:    location.Match,
+				MatchModifer: location.Modifier,
+				Directives:   location.Directives,
+			}, nil
 		}
 	}
 
@@ -110,13 +119,21 @@ func locationTester(locationsTarget []ast.Location, targetPath string) (*Locatio
 
 			match := reg.FindString(targetPath)
 			if match != "" {
-				return &LocationMatcher{MatchPath: location.Match, MatchModifer: location.Modifier}, nil
+				return &LocationMatcher{
+					MatchPath:    location.Match,
+					MatchModifer: location.Modifier,
+					Directives:   location.Directives,
+				}, nil
 			}
 		}
 	}
 
 	if bestMatch != nil {
-		return &LocationMatcher{MatchPath: bestMatch.Match, MatchModifer: bestMatch.Modifier}, nil
+		return &LocationMatcher{
+			MatchPath:    bestMatch.Match,
+			MatchModifer: bestMatch.Modifier,
+			Directives:   bestMatch.Directives,
+		}, nil
 	}
 
 	return nil, nil
