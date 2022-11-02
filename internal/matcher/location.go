@@ -74,6 +74,7 @@ func NewLocationMatcher(conf *ast.Config, targetPath string) (*LocationMatcher, 
 }
 
 func locationTester(locationsTarget []ast.Location, targetPath string) (*LocationMatcher, error) {
+	// handle exact
 	for _, location := range locationsTarget {
 		if location.Modifier != EXACT {
 			continue
@@ -88,9 +89,9 @@ func locationTester(locationsTarget []ast.Location, targetPath string) (*Locatio
 		}
 	}
 
-	var bestMatch *ast.Location
+	// handle prefix and prefix priority
+	var bestMatch ast.Location
 	bestLength := 0
-
 	for _, location := range locationsTarget {
 		if location.Modifier != PREFIX && location.Modifier != PREFIX_PRIORITY {
 			continue
@@ -99,12 +100,22 @@ func locationTester(locationsTarget []ast.Location, targetPath string) (*Locatio
 		if strings.HasPrefix(targetPath, location.Match) {
 			locationLength := len(location.Match)
 			if locationLength > bestLength {
-				bestMatch = &location
+				bestMatch = location
 				bestLength = locationLength
 			}
 		}
 	}
 
+	// do not go to regex if priority
+	if bestMatch.Match != "" && bestMatch.Modifier == PREFIX_PRIORITY {
+		return &LocationMatcher{
+			MatchPath:    bestMatch.Match,
+			MatchModifer: bestMatch.Modifier,
+			Directives:   bestMatch.Directives,
+		}, nil
+	}
+
+	// handle regex
 	for _, location := range locationsTarget {
 		if location.Modifier == REGEX || location.Modifier == REGEX_NO_CASE_SENSITIVE {
 			locationRegex := location.Match
@@ -128,7 +139,8 @@ func locationTester(locationsTarget []ast.Location, targetPath string) (*Locatio
 		}
 	}
 
-	if bestMatch != nil {
+	// use longest match
+	if bestMatch.Match != "" {
 		return &LocationMatcher{
 			MatchPath:    bestMatch.Match,
 			MatchModifer: bestMatch.Modifier,
