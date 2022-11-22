@@ -1,7 +1,7 @@
 ![](https://img.shields.io/badge/version-0.4.0-brightgreen)
 
 # go-ngx-config
-A nginx config parser
+A nginx config parser built on top of `crossplane`
 
 
 ## Basic Usage
@@ -9,12 +9,12 @@ A nginx config parser
 Usage:
 ```sh
 # Parse
-# -f          file path location nginx configm, e.g: ./examples/basic/nginx.conf
+# -f          file path location nginx config, e.g: ./examples/basic/nginx.conf
 # -o          output json file path location, e.g: ./examples/basic/output
 go-ngx-config parse -f <NGINX_CONF_FILE> -o <OUTPUT_JSON_FILE_DUMP>
 
 # Location Matcher
-# -f          file path location nginx configm, e.g: ./examples/basic/nginx.conf
+# -f          file path location nginx config, e.g: ./examples/basic/nginx.conf
 # -u          url target, e.g: /my-location
 go-ngx-config lt -f <NGINX_CONF_FILE> -u <URL_TARGET>
 ```
@@ -24,222 +24,173 @@ go-ngx-config lt -f <NGINX_CONF_FILE> -u <URL_TARGET>
 
 ```json
 {
-  "Directives": [
+  "status": "ok",
+  "errors": [],
+  "config": [
     {
-      "Block": null,
-      "Name": "daemon",
-      "Parameters": [
-        "off"
-      ]
-    },
-    {
-      "Block": null,
-      "Name": "worker_processes",
-      "Parameters": [
-        "2"
-      ]
-    },
-    {
-      "Block": null,
-      "Name": "user",
-      "Parameters": [
-        "www-data"
-      ]
-    },
-    {
-      "Block": {
-        "Directives": [
-          {
-            "Block": null,
-            "Name": "use",
-            "Parameters": [
-              "epoll"
-            ]
-          },
-          {
-            "Block": null,
-            "Name": "worker_connections",
-            "Parameters": [
-              "128"
-            ]
-          }
-        ]
-      },
-      "Name": "events",
-      "Parameters": null
-    },
-    {
-      "Block": null,
-      "Name": "error_log",
-      "Parameters": [
-        "logs/error.log",
-        "info"
-      ]
-    },
-    {
-      "Servers": [
+      "file": "./examples/basic/nginx.conf",
+      "status": "ok",
+      "errors": [],
+      "parsed": [
         {
-          "Block": {
-            "Directives": [
-              {
-                "Block": null,
-                "Name": "server_name",
-                "Parameters": [
-                  "localhost"
-                ]
-              },
-              {
-                "Block": null,
-                "Name": "listen",
-                "Parameters": [
-                  "127.0.0.1:80"
-                ]
-              },
-              {
-                "Block": null,
-                "Name": "error_page",
-                "Parameters": [
-                  "500",
-                  "502",
-                  "503",
-                  "504",
-                  "/50x.html"
-                ]
-              },
-              {
-                "Block": null,
-                "Name": "include",
-                "Parameters": [
-                  "conf-includes/proxy.conf"
-                ],
-                "IncludePath": "conf-includes/proxy.conf",
-                "Configs": [
-                  {
-                    "Directives": [
-                      {
-                        "Block": null,
-                        "Name": "proxy_set_header",
-                        "Parameters": [
-                          "Host",
-                          "$host"
-                        ]
-                      }
-                    ],
-                    "Filepath": "examples/basic/conf-includes/proxy.conf"
-                  }
-                ]
-              },
-              {
-                "Block": null,
-                "Name": "include",
-                "Parameters": [
-                  "handlers/*.conf"
-                ],
-                "IncludePath": "handlers/*.conf",
-                "Configs": [
-                  {
-                    "Directives": [
-                      {
-                        "Name": "location",
-                        "Modifier": "=",
-                        "Match": "/my-be-service",
-                        "Directives": [
-                          {
-                            "Block": null,
-                            "Name": "proxy_pass",
-                            "Parameters": [
-                              "http://be-service"
-                            ]
-                          }
-                        ]
-                      }
-                    ],
-                    "Filepath": "examples/basic/handlers/be.conf"
-                  },
-                  {
-                    "Directives": [
-                      {
-                        "Name": "location",
-                        "Modifier": "=",
-                        "Match": "/my-fe-service",
-                        "Directives": [
-                          {
-                            "Block": null,
-                            "Name": "proxy_pass",
-                            "Parameters": [
-                              "http://fe-service"
-                            ]
-                          }
-                        ]
-                      }
-                    ],
-                    "Filepath": "examples/basic/handlers/fe.conf"
-                  }
-                ]
-              },
-              {
-                "Name": "location",
-                "Modifier": "",
-                "Match": "/",
-                "Directives": [
-                  {
-                    "Block": null,
-                    "Name": "add_header",
-                    "Parameters": [
-                      "'x-foo'",
-                      "'x-bar'"
-                    ]
-                  },
-                  {
-                    "Block": null,
-                    "Name": "proxy_pass",
-                    "Parameters": [
-                      "http://my-upstream"
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        }
-      ],
-      "Name": "http",
-      "Directives": [
-        {
-          "Block": null,
-          "Name": "server_tokens",
-          "Parameters": [
+          "directive": "daemon",
+          "line": 1,
+          "args": [
             "off"
           ]
         },
         {
-          "Block": null,
-          "Name": "include",
-          "Parameters": [
-            "mime.types"
-          ],
-          "IncludePath": "mime.types",
-          "Configs": null
-        },
-        {
-          "Block": null,
-          "Name": "charset",
-          "Parameters": [
-            "utf-8"
+          "directive": "worker_processes",
+          "line": 2,
+          "args": [
+            "2"
           ]
         },
         {
-          "Block": null,
-          "Name": "access_log",
-          "Parameters": [
-            "logs/access.log",
-            "combined"
+          "directive": "user",
+          "line": 3,
+          "args": [
+            "www-data"
+          ]
+        },
+        {
+          "directive": "events",
+          "line": 5,
+          "args": [],
+          "block": [
+            {
+              "directive": "use",
+              "line": 6,
+              "args": [
+                "epoll"
+              ]
+            },
+            {
+              "directive": "worker_connections",
+              "line": 7,
+              "args": [
+                "128"
+              ]
+            }
+          ]
+        },
+        {
+          "directive": "error_log",
+          "line": 10,
+          "args": [
+            "logs/error.log",
+            "info"
+          ]
+        },
+        {
+          "directive": "http",
+          "line": 12,
+          "args": [],
+          "block": [
+            {
+              "directive": "server_tokens",
+              "line": 13,
+              "args": [
+                "off"
+              ]
+            },
+            {
+              "directive": "include",
+              "line": 14,
+              "args": [
+                "mime.types"
+              ]
+            },
+            {
+              "directive": "charset",
+              "line": 15,
+              "args": [
+                "utf-8"
+              ]
+            },
+            {
+              "directive": "access_log",
+              "line": 17,
+              "args": [
+                "logs/access.log",
+                "combined"
+              ]
+            },
+            {
+              "directive": "server",
+              "line": 19,
+              "args": [],
+              "block": [
+                {
+                  "directive": "server_name",
+                  "line": 20,
+                  "args": [
+                    "localhost"
+                  ]
+                },
+                {
+                  "directive": "listen",
+                  "line": 21,
+                  "args": [
+                    "127.0.0.1:80"
+                  ]
+                },
+                {
+                  "directive": "error_page",
+                  "line": 23,
+                  "args": [
+                    "500",
+                    "502",
+                    "503",
+                    "504",
+                    "/50x.html"
+                  ]
+                },
+                {
+                  "directive": "include",
+                  "line": 25,
+                  "args": [
+                    "conf-includes/proxy.conf"
+                  ]
+                },
+                {
+                  "directive": "include",
+                  "line": 26,
+                  "args": [
+                    "handlers/*.conf"
+                  ]
+                },
+                {
+                  "directive": "location",
+                  "line": 28,
+                  "args": [
+                    "/"
+                  ],
+                  "block": [
+                    {
+                      "directive": "add_header",
+                      "line": 29,
+                      "args": [
+                        "x-foo",
+                        "x-bar"
+                      ]
+                    },
+                    {
+                      "directive": "proxy_pass",
+                      "line": 30,
+                      "args": [
+                        "http://my-upstream"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
           ]
         }
       ]
     }
-  ],
-  "Filepath": "./examples/basic/nginx.conf"
+  ]
 }
 ```
 </details>
@@ -251,11 +202,11 @@ go-ngx-config lt -f <NGINX_CONF_FILE> -u <URL_TARGET>
 
 Exported Global Function
 ```js
-// parseConfig: generate AST in JSON format
-// testLocation: to test location matcher
+// goNgxParseConfig: generate AST in JSON format
+// goNgxTestLocation: to test location matcher
 
 // Some Basic Example
-await parseConfig(`
+await goNgxParseConfig(`
 server {
   server_name my-server.domain.com;
 
@@ -265,7 +216,7 @@ server {
 }
 `);
 
-await testLocation(`
+await goNgxTestLocation(`
 server {
   server_name my-server.domain.com;
 

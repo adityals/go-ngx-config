@@ -22,15 +22,15 @@ func main() {
 }
 
 func registerCallbacks() {
-	js.Global().Set("parseConfig", parseConfigWrapper())
-	js.Global().Set("testLocation", testLocation())
+	js.Global().Set("goNgxParseConfig", parseConfigWrapper())
+	js.Global().Set("goNgxTestLocation", testLocation())
 }
 
 func parseConfig(confString string) (*crossplane.Payload, error) {
-	// ! we mark single file as true because web still getting from text input
+	// ! we mark single file as true because from web cannot locate another file path and still getting from string
 	parsed, err := parser.NewNgxConfStringParser(confString, &crossplane.ParseOptions{
-		SingleFile:         true,
-		StopParsingOnError: true,
+		SingleFile:                true,
+		SkipDirectiveContextCheck: true,
 	})
 	if err != nil {
 		return nil, err
