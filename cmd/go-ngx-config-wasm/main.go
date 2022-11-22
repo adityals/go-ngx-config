@@ -3,17 +3,16 @@ package main
 import (
 	"encoding/json"
 	"errors"
-
 	"syscall/js"
 
-	"github.com/adityals/go-ngx-config/internal/ast"
-	"github.com/adityals/go-ngx-config/internal/matcher"
-	"github.com/adityals/go-ngx-config/internal/parser"
+	"github.com/adityals/go-ngx-config/internal/crossplane"
+	"github.com/adityals/go-ngx-config/pkg/matcher"
+	"github.com/adityals/go-ngx-config/pkg/parser"
 )
 
 // TODO: add panic handler
 func main() {
-	println("[go-ngx-config-wasm] installed")
+	println("[go-ngx-config-wasm] installed and ready to use!")
 
 	c := make(chan struct{})
 
@@ -27,16 +26,17 @@ func registerCallbacks() {
 	js.Global().Set("testLocation", testLocation())
 }
 
-func parseConfig(confString string) (*ast.Config, error) {
-	// ! we mark parseInclude as false because web still getting from text input
-	parser := parser.NewStringParser(confString, false)
-
-	ast := parser.Parse()
-	if ast == nil {
-		return nil, errors.New("cannot be parsed")
+func parseConfig(confString string) (*crossplane.Payload, error) {
+	// ! we mark single file as true because web still getting from text input
+	parsed, err := parser.NewNgxConfStringParser(confString, &crossplane.ParseOptions{
+		SingleFile:         true,
+		StopParsingOnError: true,
+	})
+	if err != nil {
+		return nil, err
 	}
 
-	return ast, nil
+	return parsed, nil
 }
 
 func parseConfigWrapper() js.Func {
@@ -102,7 +102,7 @@ func testLocation() js.Func {
 					return
 				}
 
-				match, err := matcher.NewLocationMatcher(ast, targetPath)
+				match, err := matcher.NewLocationMatcherFromPayload(ast, targetPath)
 				if err != nil {
 					errorConstructor := js.Global().Get("Error")
 					errorObject := errorConstructor.New(err.Error())

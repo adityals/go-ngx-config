@@ -1,33 +1,21 @@
 package parser
 
-import (
-	"errors"
+import "github.com/adityals/go-ngx-config/internal/crossplane"
 
-	"github.com/adityals/go-ngx-config/internal/ast"
-	"github.com/adityals/go-ngx-config/internal/parser"
-)
-
-func NewNgxConfParser(parserOpts NgxConfParserCliOptions) (*ast.Config, error) {
-	parser, err := parser.NewParser(parser.ParserOptions{Filepath: parserOpts.Filepath, ParseInclude: parserOpts.ParseInclude})
+func NewNgxConfParser(filename string, opts *crossplane.ParseOptions) (*crossplane.Payload, error) {
+	payload, err := crossplane.Parse(filename, opts)
 	if err != nil {
 		return nil, err
 	}
 
-	parsedConf := parser.Parse()
-	if parsedConf == nil {
-		return nil, errors.New("cannot be parsed")
-	}
-
-	return parsedConf, nil
+	return payload, nil
 }
 
-func NewStringNgxConfParser(confString string, parseInclude bool) (*ast.Config, error) {
-	parser := parser.NewStringParser(confString, parseInclude)
-
-	parsedConf := parser.Parse()
-	if parsedConf == nil {
-		return nil, errors.New("cannot be parsed")
+func NewNgxConfStringParser(conf string, opts *crossplane.ParseOptions) (*crossplane.Payload, error) {
+	payload, err := crossplane.ParseString(conf, opts)
+	if err != nil {
+		return nil, err
 	}
 
-	return parsedConf, nil
+	return payload, nil
 }

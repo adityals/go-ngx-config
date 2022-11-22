@@ -6,14 +6,19 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/adityals/go-ngx-config/internal/ast"
-	"github.com/adityals/go-ngx-config/internal/statement"
+	"github.com/adityals/go-ngx-config/internal/crossplane"
 )
 
 type LocationMatcher struct {
 	MatchPath    string
 	MatchModifer string
-	Directives   []statement.IDirective
+	Directives   crossplane.Directive
+}
+
+type locationDirective struct {
+	Modifier   string
+	Path       string
+	Directives crossplane.Directive
 }
 
 const (
@@ -24,7 +29,20 @@ const (
 	PREFIX                  = ""
 )
 
-func NewLocationMatcher(conf *ast.Config, targetPath string) (*LocationMatcher, error) {
+func getLocation(directive []crossplane.Directive, locationDirectives *[]crossplane.Directive) {
+	for _, parsed := range directive {
+		if parsed.Directive == "location" {
+			*locationDirectives = append(*locationDirectives, parsed)
+		}
+
+		if parsed.Block != nil && parsed.Directive != "location" {
+			getLocation(*parsed.Block, locationDirectives)
+		}
+
+	}
+}
+
+func NewLocationMatcher(conf *crossplane.Payload, targetPath string) (*LocationMatcher, error) {
 	if conf == nil {
 		return nil, errors.New("no config can be compute")
 	}
@@ -34,27 +52,37 @@ func NewLocationMatcher(conf *ast.Config, targetPath string) (*LocationMatcher, 
 		return nil, err
 	}
 
-	locations := make([]ast.Location, 0)
+	locations := make([]locationDirective, 0)
+	locationDirectives := make([]crossplane.Directive, 0)
 
-	locationDirectives := conf.FindDirectives("location")
+	for _, v := range conf.Config {
+		getLocation(v.Parsed, &locationDirectives)
+	}
 
 	if len(locationDirectives) == 0 {
 		return nil, errors.New("no location(s) found")
 	}
 
 	for _, directive := range locationDirectives {
-		name := directive.GetName()
-		parameters := directive.GetParameters()
-		modifier := parameters[0]
-		match := parameters[1]
-		directives := directive.GetBlock().GetDirectives()
+		args := directive.Args
+		if len(args) == 1 {
+			path := args[0]
+			locations = append(locations, locationDirective{
+				Directives: directive,
+				Modifier:   "",
+				Path:       path,
+			})
+			continue
+		}
 
-		locations = append(locations, ast.Location{
-			Name:       name,
+		modifier := args[0]
+		path := args[1]
+		locations = append(locations, locationDirective{
+			Directives: directive,
 			Modifier:   modifier,
-			Match:      match,
-			Directives: directives,
+			Path:       path,
 		})
+
 	}
 
 	match, err := locationTester(locations, parsedUrl.Path)
@@ -74,16 +102,16 @@ func NewLocationMatcher(conf *ast.Config, targetPath string) (*LocationMatcher, 
 	}, nil
 }
 
-func locationTester(locationsTarget []ast.Location, targetPath string) (*LocationMatcher, error) {
+func locationTester(locationsTarget []locationDirective, targetPath string) (*LocationMatcher, error) {
 	// handle exact
 	for _, location := range locationsTarget {
 		if location.Modifier != EXACT {
 			continue
 		}
 
-		if location.Match == targetPath {
+		if location.Path == targetPath {
 			return &LocationMatcher{
-				MatchPath:    location.Match,
+				MatchPath:    location.Path,
 				MatchModifer: location.Modifier,
 				Directives:   location.Directives,
 			}, nil
@@ -91,15 +119,15 @@ func locationTester(locationsTarget []ast.Location, targetPath string) (*Locatio
 	}
 
 	// handle prefix and prefix priority
-	var bestMatch ast.Location
+	var bestMatch locationDirective
 	bestLength := 0
 	for _, location := range locationsTarget {
 		if location.Modifier != PREFIX && location.Modifier != PREFIX_PRIORITY {
 			continue
 		}
 
-		if strings.HasPrefix(targetPath, location.Match) {
-			locationLength := len(location.Match)
+		if strings.HasPrefix(targetPath, location.Path) {
+			locationLength := len(location.Path)
 			if locationLength > bestLength {
 				bestMatch = location
 				bestLength = locationLength
@@ -108,9 +136,9 @@ func locationTester(locationsTarget []ast.Location, targetPath string) (*Locatio
 	}
 
 	// do not go to regex if priority
-	if bestMatch.Match != "" && bestMatch.Modifier == PREFIX_PRIORITY {
+	if bestMatch.Path != "" && bestMatch.Modifier == PREFIX_PRIORITY {
 		return &LocationMatcher{
-			MatchPath:    bestMatch.Match,
+			MatchPath:    bestMatch.Path,
 			MatchModifer: bestMatch.Modifier,
 			Directives:   bestMatch.Directives,
 		}, nil
@@ -119,7 +147,7 @@ func locationTester(locationsTarget []ast.Location, targetPath string) (*Locatio
 	// handle regex
 	for _, location := range locationsTarget {
 		if location.Modifier == REGEX || location.Modifier == REGEX_NO_CASE_SENSITIVE {
-			locationRegex := location.Match
+			locationRegex := location.Path
 			if location.Modifier == REGEX_NO_CASE_SENSITIVE {
 				locationRegex = "(?i)" + locationRegex
 			}
@@ -132,7 +160,7 @@ func locationTester(locationsTarget []ast.Location, targetPath string) (*Locatio
 			match := reg.FindString(targetPath)
 			if match != "" {
 				return &LocationMatcher{
-					MatchPath:    location.Match,
+					MatchPath:    location.Path,
 					MatchModifer: location.Modifier,
 					Directives:   location.Directives,
 				}, nil
@@ -141,9 +169,9 @@ func locationTester(locationsTarget []ast.Location, targetPath string) (*Locatio
 	}
 
 	// use longest match
-	if bestMatch.Match != "" {
+	if bestMatch.Path != "" {
 		return &LocationMatcher{
-			MatchPath:    bestMatch.Match,
+			MatchPath:    bestMatch.Path,
 			MatchModifer: bestMatch.Modifier,
 			Directives:   bestMatch.Directives,
 		}, nil

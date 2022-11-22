@@ -6,5 +6,8 @@
     "go.testEnvVars": {
         "GOARCH":"wasm",
         "GOOS":"js",
-    }
+    },
+    "eslint.workingDirectories": [
+        "./web"
+    ]
 }
