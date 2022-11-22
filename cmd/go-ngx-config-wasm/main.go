@@ -31,6 +31,7 @@ func parseConfig(confString string) (*crossplane.Payload, error) {
 	parsed, err := parser.NewNgxConfStringParser(confString, &crossplane.ParseOptions{
 		SingleFile:                true,
 		SkipDirectiveContextCheck: true,
+		StopParsingOnError:        true,
 	})
 	if err != nil {
 		return nil, err

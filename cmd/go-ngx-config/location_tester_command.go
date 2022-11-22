@@ -49,14 +49,14 @@ func RunNgxLocationTester(cmd *cobra.Command, args []string) error {
 	logrus.Info("[Match] Modifier: ", match.MatchModifer)
 	logrus.Info("[Match] Path: ", match.MatchPath)
 
-	logrus.Info("[Match] --- Directives Inside --- ")
+	logrus.Info("[Match] --- Directives Inside Block --- ")
 	for _, d := range *match.Directives.Block {
 		logrus.Info("[Match] Name: ", d.Directive)
-		for _, param := range d.Args {
-			logrus.Info("[Match] Parameters: ", param)
+		for i, param := range d.Args {
+			logrus.Infof("[Match] Args[%d]: %s", i, param)
 		}
 	}
-	logrus.Info("[Match] --- End of Directives Inside --- ")
+	logrus.Info("[Match] --- End of Directives Inside Block --- ")
 
 	logrus.Info("Process time: ", elapsed)
 

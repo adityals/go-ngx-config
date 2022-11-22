@@ -262,7 +262,7 @@ func (p *parser) parse(parsing *Config, tokens chan ngxToken, ctx blockCtx, cons
 
 		// parse arguments by reading tokens
 		t = <-tokens
-		for t.IsQuoted || (t.Value != "{" && t.Value != ";" && t.Value != "}") {
+		for t.IsQuoted || (t.Value != "{" && t.Value != ";" && t.Value != "}" && t.Value != "") {
 			if strings.HasPrefix(t.Value, "#") && !t.IsQuoted {
 				commentsInArgs = append(commentsInArgs, t.Value[1:])
 			} else {

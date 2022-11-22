@@ -1,7 +1,7 @@
-![](https://img.shields.io/badge/version-0.4.0-brightgreen)
+![](https://img.shields.io/badge/version-0.5.0-brightgreen)
 
 # go-ngx-config
-A nginx config parser built on top of `crossplane`
+A nginx config parser built on top of forked [`crossplane`](https://github.com/aluttik/go-crossplane) with some modification.
 
 
 ## Basic Usage

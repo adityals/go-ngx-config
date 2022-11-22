@@ -26,6 +26,7 @@ func balanceBraces(tokens chan ngxToken) chan ngxToken {
 	c := make(chan ngxToken)
 
 	go func() {
+		defer close(c)
 		depth := 0
 		line := 0
 		for t := range tokens {
@@ -60,7 +61,6 @@ func balanceBraces(tokens chan ngxToken) chan ngxToken {
 			}
 		}
 
-		close(c)
 	}()
 
 	return c
@@ -70,6 +70,7 @@ func tokenize(reader io.Reader) chan ngxToken {
 	c := make(chan ngxToken)
 
 	go func() {
+		defer close(c)
 		var ok bool
 		var token string
 		var tokenLine int
@@ -170,7 +171,6 @@ func tokenize(reader io.Reader) chan ngxToken {
 			c <- ngxToken{Value: token, Line: tokenLine, IsQuoted: false}
 		}
 
-		close(c)
 	}()
 
 	return c
@@ -180,12 +180,12 @@ func readChars(reader io.Reader) chan string {
 	c := make(chan string)
 
 	go func() {
+		defer close(c)
 		scanner := bufio.NewScanner(reader)
 		scanner.Split(bufio.ScanRunes)
 		for scanner.Scan() {
 			c <- scanner.Text()
 		}
-		close(c)
 	}()
 
 	return c
@@ -195,6 +195,7 @@ func lineCount(chars chan string) chan charLine {
 	c := make(chan charLine)
 
 	go func() {
+		defer close(c)
 		line := 1
 		for char := range chars {
 			if strings.HasSuffix(char, "\n") {
@@ -202,7 +203,6 @@ func lineCount(chars chan string) chan charLine {
 			}
 			c <- charLine{char: char, line: line}
 		}
-		close(c)
 	}()
 
 	return c
@@ -212,6 +212,7 @@ func escapeChars(chars chan string) chan string {
 	c := make(chan string)
 
 	go func() {
+		defer close(c)
 		for char := range chars {
 			if char == "\\" {
 				char += <-chars
@@ -222,7 +223,6 @@ func escapeChars(chars chan string) chan string {
 			}
 			c <- char
 		}
-		close(c)
 	}()
 
 	return c
