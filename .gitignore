@@ -12,3 +12,7 @@ wasm_exec.js
 *.log
 .next
 next-env.d.ts
+
+# binary included for deploy vercel
+!web/public/wasm_exec.js
+!web/public/go-ngx-config-parser.wasm
