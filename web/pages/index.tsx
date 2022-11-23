@@ -52,6 +52,8 @@ export default function Home() {
     // @ts-ignore - skip, too lazy to fix
     const targetUrl = e.target['url'].value;
 
+    setErrParse('');
+
     // @ts-ignore - injected from WASM
     const goNgxTestLocation = window?.goNgxTestLocation;
     if (goNgxTestLocation) {
