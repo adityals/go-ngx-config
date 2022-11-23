@@ -4,8 +4,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/adityals/go-ngx-config/internal/matcher"
-	"github.com/adityals/go-ngx-config/pkg/parser"
+	"github.com/adityals/go-ngx-config/internal/crossplane"
+	"github.com/adityals/go-ngx-config/pkg/matcher"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -20,7 +20,7 @@ func RunNgxLocationTester(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	parseInclude, err := cmd.Flags().GetBool("include")
+	singleFile, err := cmd.Flags().GetBool("single")
 	if err != nil {
 		return err
 	}
@@ -30,19 +30,12 @@ func RunNgxLocationTester(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	logrus.Info("Parsing include: ", parseInclude)
+	logrus.Info("Single File: ", singleFile)
 
-	parserOpts := parser.NgxConfParserCliOptions{
-		Filepath:     filePath,
-		ParseInclude: parseInclude,
-	}
-
-	ast, err := parser.NewNgxConfParser(parserOpts)
-	if err != nil {
-		return err
-	}
-
-	match, err := matcher.NewLocationMatcher(ast, targetUrl)
+	match, err := matcher.NewLocationMatcher(filePath, targetUrl, &crossplane.ParseOptions{
+		SingleFile:     singleFile,
+		CombineConfigs: true,
+	})
 	if err != nil {
 		return err
 	}
@@ -56,14 +49,14 @@ func RunNgxLocationTester(cmd *cobra.Command, args []string) error {
 	logrus.Info("[Match] Modifier: ", match.MatchModifer)
 	logrus.Info("[Match] Path: ", match.MatchPath)
 
-	logrus.Info("[Match] --- Directives Inside --- ")
-	for _, d := range match.Directives {
-		logrus.Info("[Match] Name: ", d.GetName())
-		for _, param := range d.GetParameters() {
-			logrus.Info("[Match] Parameters: ", param)
+	logrus.Info("[Match] --- Directives Inside Block --- ")
+	for _, d := range *match.Directives.Block {
+		logrus.Info("[Match] Name: ", d.Directive)
+		for i, param := range d.Args {
+			logrus.Infof("[Match] Args[%d]: %s", i, param)
 		}
 	}
-	logrus.Info("[Match] --- End of Directives Inside --- ")
+	logrus.Info("[Match] --- End of Directives Inside Block --- ")
 
 	logrus.Info("Process time: ", elapsed)
 

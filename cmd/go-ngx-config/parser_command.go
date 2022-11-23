@@ -6,13 +6,13 @@ import (
 	"os"
 	"time"
 
+	"github.com/adityals/go-ngx-config/internal/crossplane"
 	"github.com/adityals/go-ngx-config/pkg/parser"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
 func RunParseNgx(cmd *cobra.Command, args []string) error {
-
 	startTime := time.Now()
 
 	logrus.Info("Parsing nginx config")
@@ -22,7 +22,7 @@ func RunParseNgx(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	parseInclude, err := cmd.Flags().GetBool("include")
+	singleFile, err := cmd.Flags().GetBool("single")
 	if err != nil {
 		return err
 	}
@@ -32,14 +32,12 @@ func RunParseNgx(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	logrus.Info("Parsing include: ", parseInclude)
+	logrus.Info("Single File: ", singleFile)
 
-	parserOpts := parser.NgxConfParserCliOptions{
-		Filepath:     filePath,
-		ParseInclude: parseInclude,
-	}
-
-	ast, err := parser.NewNgxConfParser(parserOpts)
+	ast, err := parser.NewNgxConfParser(filePath, &crossplane.ParseOptions{
+		SingleFile:     singleFile,
+		CombineConfigs: true,
+	})
 	if err != nil {
 		return err
 	}

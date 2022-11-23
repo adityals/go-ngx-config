@@ -57,7 +57,7 @@ const targetUrlEl = document.getElementById('target-url');
 actAstBtn.addEventListener('click', async () => {
   const configVal = configEl.value;
   try {
-    const jsonAst = await parseConfig(configVal);
+    const jsonAst = await goNgxParseConfig(configVal);
     astResultPlaceholder.innerHTML = jsonAst;
   } catch(err) {
     console.error('[gen-ast] error:', err);
@@ -70,7 +70,7 @@ actLocationTestBtn.addEventListener('click', async () => {
   const targetUrlVal = targetUrlEl.value;
 
   try {
-    const result = await testLocation(configVal, targetUrlVal);
+    const result = await goNgxTestLocation(configVal, targetUrlVal);
     astResultPlaceholder.innerHTML = result;
   } catch (err) {
     console.error('[location-test] error:', err);

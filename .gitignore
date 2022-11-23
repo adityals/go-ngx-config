@@ -10,3 +10,5 @@ bin
 dump.json
 wasm_exec.js
 *.log
+.next
+next-env.d.ts
