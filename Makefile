@@ -19,8 +19,15 @@ serve-wasm-dev: clean-wasm-dev build-wasm
 	@cp ./bin/go-ngx-config-parser.wasm  ./examples/wasm/
 	pnpm serve --filter=wasm-example
 
-.PHONY: serve-web
-serve-dev-web: build-wasm
+.PHONY: init-web
+init-web:
+	pnpm i
+
+.PHONY: prepare-web
+prepare-web: build-wasm
 	bash -c "cp ${GO_ROOT}/misc/wasm/wasm_exec.js ./web/public/"
 	@cp ./bin/go-ngx-config-parser.wasm ./web/public
+
+.PHONY: serve-web
+serve-dev-web: prepare-web
 	pnpm dev --filter=web
