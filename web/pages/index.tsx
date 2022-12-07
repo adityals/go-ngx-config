@@ -1,7 +1,9 @@
 import Head from 'next/head';
-import { ChangeEvent, FormEvent, useCallback, useState } from 'react';
-import InputConfig from '../components/InputConfig';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import type { ChangeEvent, FormEvent } from 'react';
+import InputConfig from '../components/ConfigEditor';
 import ParseOptions from '../components/ParseOptions';
+import ParserResult from '../components/ParserResult';
 import { debounce } from '../utilities/common/debounce';
 
 interface ParseOptions {
@@ -9,12 +11,15 @@ interface ParseOptions {
 }
 
 export default function Home() {
-  const [parsedConf, setParsedConf] = useState(null);
-  const [errParse, setErrParse] = useState('');
+  const [config, setConfig] = useState('');
   const [parseOpts, setParseOpts] = useState<ParseOptions>({ skipCtx: false });
-  const [confVal, setConfVal] = useState('');
 
-  const handleChangeParseOpts = (name: string, e: ChangeEvent<HTMLInputElement>) => {
+  const [parsedConf, setParsedConf] = useState(null);
+  const [submittedTestLocation, setSubmittedTestLocation] = useState(false);
+
+  const [errParse, setErrParse] = useState('');
+
+  const handleChangeParseOpts = useCallback((name: string, e: ChangeEvent<HTMLInputElement>) => {
     const val = e.target.checked;
     switch (name) {
       case 'skip-check-ctx':
@@ -23,55 +28,64 @@ export default function Home() {
       default:
       // noop
     }
-  };
+  }, []);
 
-  const parseNginxConfig = debounce(async (e: ChangeEvent<HTMLTextAreaElement>) => {
-    const configVal = e.target.value;
-
-    setConfVal(configVal);
-    setErrParse('');
-
+  const debounceParseNgxConf = debounce(async (config: string) => {
     // @ts-ignore - injected from WASM
     const goNgxParseConfig = window?.goNgxParseConfig;
     if (goNgxParseConfig) {
       try {
-        const parsed = await goNgxParseConfig(configVal, parseOpts);
+        const parsed = await goNgxParseConfig(config, parseOpts);
         setParsedConf(parsed);
       } catch (err) {
         setErrParse(String(err));
         setParsedConf(null);
       }
     }
-  }, 500);
+  }, 700);
 
-  const handleChangeConfig = useCallback(parseNginxConfig, [parseNginxConfig]);
+  const parseNgxConf = useMemo(() => debounceParseNgxConf, [debounceParseNgxConf]);
 
-  const handleCheckTestUrl = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    // @ts-ignore - skip, too lazy to fix
-    const targetUrl = e.target['url'].value;
-
-    setErrParse('');
-
-    // @ts-ignore - injected from WASM
-    const goNgxTestLocation = window?.goNgxTestLocation;
-    if (goNgxTestLocation) {
-      try {
-        const matchConf = await goNgxTestLocation(confVal, targetUrl, parseOpts);
-        setParsedConf(matchConf);
-      } catch (err) {
-        setErrParse(String(err));
-        setParsedConf(null);
-      }
+  const handleChangeConfig = useCallback((v: string | undefined) => {
+    if (v) {
+      setConfig(v);
+      setSubmittedTestLocation(false);
     }
-  };
+  }, []);
+
+  const handleCheckTestUrl = useCallback(
+    async (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      setSubmittedTestLocation(true);
+
+      // @ts-ignore - skip, too lazy to fix
+      const targetUrl = e.target['url'].value;
+      // @ts-ignore - injected from WASM
+      const goNgxTestLocation = window?.goNgxTestLocation;
+      if (goNgxTestLocation) {
+        try {
+          const matchConf = await goNgxTestLocation(config, targetUrl, parseOpts);
+          setParsedConf(matchConf);
+        } catch (err) {
+          setErrParse(String(err));
+          setParsedConf(null);
+        }
+      }
+    },
+    [config, parseOpts],
+  );
+
+  useEffect(() => {
+    if (config && !submittedTestLocation) {
+      parseNgxConf(config);
+    }
+  }, [config, submittedTestLocation, parseNgxConf]);
 
   return (
     <div>
       <Head>
         <title>Go Nginx Config | Playground</title>
-        <meta name="description" content="Nginx Config Parser and Tester with WASM" />
+        <meta name="description" content="Nginx Config Parser and Location Tester with WASM" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div>
@@ -81,7 +95,7 @@ export default function Home() {
           </div>
           <div className="flex-none w-1/2">
             <form>
-              <InputConfig name="nginx_config" onChange={handleChangeConfig} />
+              <InputConfig value={config} onChange={handleChangeConfig} />
             </form>
           </div>
           <div className="flex-none h-screen w-5/12">
@@ -92,7 +106,7 @@ export default function Home() {
                     <input
                       type="string"
                       id="url"
-                      className="block w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      className="block w-full p-2 text-sm text-gray-900 border border-gray-300 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       placeholder="Test your url (e.g: /my-location)"
                       required
                     />
@@ -106,8 +120,8 @@ export default function Home() {
                 </form>
               </div>
               <div className="overflow-y-auto h-5/6">
-                {parsedConf && <pre className="py-2 pl-3 pr-3 h-full">{parsedConf}</pre>}
-                {errParse && <div className="py-2 pl-3 pr-3 h-full text-red-500">{errParse}</div>}
+                {parsedConf && <ParserResult value={parsedConf} languange="json" />}
+                {errParse && <ParserResult value={errParse} languange="bash" />}
               </div>
             </div>
           </div>
