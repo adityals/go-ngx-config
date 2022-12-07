@@ -2,7 +2,7 @@
 
 # go-ngx-config
 A nginx config parser built on top of forked [`crossplane`](https://github.com/aluttik/go-crossplane) with some modification.
-
+It also has location tester built on Web Assembly.
 
 ## Basic Usage
 ### Binary

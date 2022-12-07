@@ -2,7 +2,7 @@ GO_ROOT=$(shell go env GOROOT)
 
 .PHONY: build
 build:
-	go build -o ./bin/go-ngx-config ./cmd/go-ngx-config/*.go
+	GOOS=linux GOARCH=amd64 go build -o ./bin/go-ngx-config ./cmd/go-ngx-config/*.go
 
 .PHONY: build-wasm
 build-wasm:
