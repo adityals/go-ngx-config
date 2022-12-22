@@ -32,7 +32,7 @@ const registerWasm = async () => {
     const importObject = go.importObject;
 
     // Instantiate our wasm module
-    const wasmModule = await wasmBrowserInstantiate("./go-ngx-config-parser.wasm", importObject);
+    const wasmModule = await wasmBrowserInstantiate("./go-ngx-config.wasm", importObject);
 
     await go.run(wasmModule.instance)
 
