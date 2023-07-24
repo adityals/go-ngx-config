@@ -120,8 +120,8 @@ export default function Home() {
                 </form>
               </div>
               <div className="overflow-y-auto h-5/6">
-                {parsedConf && <ParserResult value={parsedConf} languange="json" />}
-                {errParse && <ParserResult value={errParse} languange="bash" />}
+                {parsedConf && <ParserResult value={parsedConf} languange="json" readonly />}
+                {errParse && <ParserResult value={errParse} languange="bash" readonly />}
               </div>
             </div>
           </div>
