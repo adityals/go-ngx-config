@@ -41,4 +41,4 @@ prepare-web: build-wasm
 
 .PHONY: serve-web
 serve-dev-web: prepare-web
-	pnpm dev --filter=web
+	pnpm --filter=web dev
